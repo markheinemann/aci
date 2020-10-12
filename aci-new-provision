@@ -1,3 +1,11 @@
+# This python script adds a vlan to an existing  pool, and then creates an associated  BD and an EPG
+# The program will ask the user for the apic ip address, the apic username and the apic password
+# variables that need to be manually changed are : 1) the BD name 2) the vrf name 3) the name of the EPG 4) the vlan number
+
+
+
+
+
 import requests
 from getpass import getpass
 
@@ -5,7 +13,7 @@ from getpass import getpass
 
 requests.packages.urllib3.disable_warnings()
 
-
+apicip = input("apic ip address")
 username = input("apic username: ")
 password = getpass('apic password: ')
 
@@ -14,7 +22,8 @@ password = getpass('apic password: ')
 
 #generate cookie
 
-url='https://172.26.1.79/api/aaaLogin.json'
+#url='https://172.26.1.79/api/aaaLogin.json'
+url="https://" + apicip + "/api/aaaLogin.json"
 
 
 
@@ -39,7 +48,7 @@ cookies={
 	'APIC-Cookie' : token
 	}
 
-# variables
+# variables that need to be set manually by the user
 
 bdname = "bd_core_1.2.3.1_24"
 vrf = "vrf_uslab_core"
@@ -48,7 +57,7 @@ vlan = "350"
 
 # add vlan to pool_bd_core
 
-url = "https://172.26.1.79/api/node/mo/uni/infra/vlanns-[pool_bd_core]-static/from-[vlan-" + vlan + "]-to-[vlan-" + vlan + "].json"
+url = "https://" + apicip + "/api/node/mo/uni/infra/vlanns-[pool_bd_core]-static/from-[vlan-" + vlan + "]-to-[vlan-" + vlan + "].json"
 
 
 payload = {
@@ -80,7 +89,7 @@ print('Vlan  added to pool - Status Code:' + str(response.status_code))
 
 #create new bd using generated cookie
 
-url = "https://172.26.1.79/api/node/mo/uni/tn-tnt_lab_baremetal_prod/BD-" + bdname + ".json"
+url = "https://" + apicip + "/api/node/mo/uni/tn-tnt_lab_baremetal_prod/BD-" + bdname + ".json"
 
 payload = {
 
@@ -174,7 +183,7 @@ print('BD created -  Status Code:' + str(response.status_code))
 
 #epg creation
 
-url = "https://172.26.1.79/api/node/mo/uni/tn-tnt_lab_baremetal_prod/ap-app_profile_baremetal_prod/epg-" + epg + ".json"
+url = "https://" + apicip + "/api/node/mo/uni/tn-tnt_lab_baremetal_prod/ap-app_profile_baremetal_prod/epg-" + epg + ".json"
 
 
 payload = {
